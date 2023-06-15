@@ -1,0 +1,151 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace sentenceVal
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            bool end = false;
+            while(end == false)
+            {
+                Console.WriteLine("Enter String, type q to quit or c to clear console:");
+
+                string sentence = Console.ReadLine();
+                if (sentence != "q" && sentence != "c")
+                {
+                    if (validationChecker(sentence) == true)
+                    {
+                        Console.WriteLine("Valid sentence");
+                    }
+                }
+                else if (sentence == "c")
+                {
+                    Console.Clear();
+                }
+                else if (sentence == "q")
+                {
+                    Console.Clear();
+                    Console.WriteLine("GoodBye");
+                    Console.ReadLine();
+                    end = true;
+                }
+                else
+                {
+                    Console.WriteLine("Error, invalid sentence");
+                }
+            }
+
+        }
+
+        static bool validationChecker(string sentence)
+        {
+            bool valid = true; // is reset after each validation
+            bool globalValid = true; // if any validation fails
+
+            //Capital Validation
+            valid = char.IsUpper(sentence[0]);
+            if (valid == false) { Console.WriteLine("Error, first letter not capitalised."); globalValid = false; }
+            valid = true;
+
+            //" validation
+            bool v = quoteValidation(sentence);
+            if (valid == false) { Console.WriteLine("Error, odd number of quotations."); globalValid = false; }
+            valid = true;
+
+            //!.? validation
+            valid = terminationChar(sentence);
+            if (valid == false) { Console.WriteLine("Error, sentence must end in . ! or ?."); globalValid = false; }
+            valid = true;
+
+            //mid sentence !?. validation
+            valid = midTerminationValidation(sentence);
+            if (valid == false) { Console.WriteLine("Error, no period characters other than the last character."); globalValid = false; }
+            valid = true;
+
+            //number validation
+            valid = numberValidation(sentence); 
+            if (valid == false) { Console.WriteLine("Error, any number smaller than 13 must be spelled out."); globalValid = false; }
+            valid = true;
+
+            return globalValid;
+        }
+        static bool numberValidation(string sentence)
+        {
+            string[] numbers = { "1", "2", "3", "4", "5", "6,", "7", "8", "9", "10", "11", "12" };
+            string[] wordArray = sentence.Split(' ');
+            bool valid = true;
+            for(int i =  0; i < wordArray.Length; i++)
+            {
+                for(int j = 0; j < numbers.Length; j++)
+                {
+                    if (wordArray[i] == numbers[j])
+                    {
+                        valid = false;
+                    }
+                }
+
+            }
+            return valid;
+        }
+        static bool midTerminationValidation(string sentence)
+        {
+            bool valid = true;
+            string termination = "!?.";
+            for (int i = 0; i < sentence.Length; i++)
+            {
+                for(int j = 0; j <= 2; j++)
+                {
+                    //iterates through all character bar the last one, looking for !? or .
+                    if (sentence[i] == termination[j] && i != sentence.Length - 1)
+                    {
+
+                        valid = false;
+                        break;
+                    }
+                }
+
+            }
+            return valid;
+        }
+        static bool terminationChar(string sentence)
+        {
+            bool terminationPresent = false;
+            char[] termination = { '!', '.', '?' };
+            for (int i = 0; i < 2; i++)
+            {
+                //compares, last character in sentence, to !? or . 
+                if (sentence[sentence.Length - 1] == termination[i])
+                {
+                    terminationPresent = true;
+                }
+            }
+            return terminationPresent;
+        }
+        static bool quoteValidation(string sentence)
+        {
+            bool quote = true;
+            foreach (char c in sentence)
+            {
+                if (c == '"')
+                {
+                    //flips to false when odd, and back to true when even
+                    if (quote == true)
+                    {
+                        quote = false;
+                    }
+
+                    else
+                    {
+                        quote = true;
+                    }
+                }
+            }
+            return quote;
+        }
+    }
+}
